@@ -19,13 +19,178 @@ knitr::opts_chunk$set(
 ```
 
 ```{r}
+library(tidyverse)
 library(readxl)
+library(writexl)
 library(jsonlite)
+```
+
+## "Whitespace" Files
+
+### The `read_table()` Function
+
+    # syntax
+    read_table(
+      file,
+      col_names = TRUE,
+      col_types = NULL,
+      locale = default_locale(),
+      na = "NA",
+      skip = 0,
+      n_max = Inf,
+      guess_max = min(n_max, 1000),
+      progress = show_progress(),
+      comment = "",
+      show_col_types = should_show_types(),
+      skip_empty_rows = TRUE
+    )
+
+```{r}
+# remember the script we saw in Week 1?
+
+mlco2v1 <- read_table(
+  file = "https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.txt",
+  comment = "#",
+  col_names = c(
+    "year",
+    "month",
+    "dec_date",
+    "co2",
+    "co2_adj",
+    "num_days",
+    "sd_days",
+    "uncertainty"
+  )
+)
+```
+
+```{r}
+glimpse(mlco2v1)
+```
+
+```{r}
+mlco2v2 <- read_table(
+  file = "https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.txt",
+  comment = "#",
+  col_names = c(
+    "year",
+    "month",
+    "dec_date",
+    "co2",
+    "co2_adj",
+    "num_days",
+    "sd_days",
+    "uncertainty"
+  ),
+  col_types = "iinnnnnn"
+)
+```
+
+```{r}
+glimpse(mlco2v2)
+```
+
+## Delimited Files
+
+### The `read_delim()` Function
+
+    # syntax
+    # general format
+    read_delim(
+      file,
+      delim = NULL,
+      quote = "\"",
+      escape_backslash = FALSE,
+      escape_double = TRUE,
+      col_names = TRUE,
+      col_types = NULL,
+      col_select = NULL,
+      id = NULL,
+      locale = default_locale(),
+      na = c("", "NA"),
+      quoted_na = TRUE,
+      comment = "",
+      trim_ws = FALSE,
+      skip = 0,
+      n_max = Inf,
+      guess_max = min(1000, n_max),
+      name_repair = "unique",
+      num_threads = readr_threads(),
+      progress = show_progress(),
+      show_col_types = should_show_types(),
+      skip_empty_rows = TRUE,
+      lazy = should_read_lazy()
+    )
+
+```{r}
+
+```
+
+### The `read_csv()` Function
+
+    # comma separated values
+    read_csv(
+      file,
+      col_names = TRUE,
+      col_types = NULL,
+      col_select = NULL,
+      id = NULL,
+      locale = default_locale(),
+      na = c("", "NA"),
+      quoted_na = TRUE,
+      quote = "\"",
+      comment = "",
+      trim_ws = TRUE,
+      skip = 0,
+      n_max = Inf,
+      guess_max = min(1000, n_max),
+      name_repair = "unique",
+      num_threads = readr_threads(),
+      progress = show_progress(),
+      show_col_types = should_show_types(),
+      skip_empty_rows = TRUE,
+      lazy = should_read_lazy()
+    )
+
+```{r}
+
+```
+
+### The `read_tsv()` Function
+
+    # tab-separated values
+    read_tsv(
+      file,
+      col_names = TRUE,
+      col_types = NULL,
+      col_select = NULL,
+      id = NULL,
+      locale = default_locale(),
+      na = c("", "NA"),
+      quoted_na = TRUE,
+      quote = "\"",
+      comment = "",
+      trim_ws = TRUE,
+      skip = 0,
+      n_max = Inf,
+      guess_max = min(1000, n_max),
+      progress = show_progress(),
+     name_repair = "unique",
+      num_threads = readr_threads(),
+      show_col_types = should_show_types(),
+      skip_empty_rows = TRUE,
+      lazy = should_read_lazy()
+    )
+
+```{r}
+
 ```
 
 ## RDS and RDATA Files
 
 ### Reading and Writing `.rds`
+
+An `.rds` file is an `R`-specific file type that stores a single `R` object, such as a vector, list, dataset, plot, or function. 
 
 Read an object from an `.rds` file using the following general code. You may need to specify a path name. You can also read data directly from a URL.
 
@@ -34,10 +199,10 @@ readRDS(file = "my_data.rds")
 ```
 
     # syntax
-    readRDS(file, 
-      refhook = NULL)
-
-Try it!
+    readRDS(
+      file, 
+      refhook = NULL
+    )
 
 ```{r}
 
@@ -50,20 +215,22 @@ saveRDS(objectname, file = "my_data.rds")
 ```
 
     # syntax
-    saveRDS(object, 
+    saveRDS(
+      object, 
       file = "", 
       ascii = FALSE, 
       version = NULL,
       compress = TRUE, 
-      refhook = NULL)
-
-Try it!
+      refhook = NULL
+    )
 
 ```{r}
 
 ```
 
 ### Reading and Writing `.Rdata`
+
+An `.Rdata` file is an `R`-specific file type that stores multiple `R` objects together in a single file. It is sometimes abbreviated as `.Rda`.
 
 Load an `.Rdata` file using the following general code. You may need to specify a path name. You can also read data directly from a URL.
 
@@ -72,11 +239,11 @@ load("data.RData")
 ```
 
     # syntax
-    load(file, 
-    envir = parent.frame(), 
-    verbose = FALSE)
-
-Try it!
+    load(
+      file, 
+      envir = parent.frame(), 
+      verbose = FALSE
+    )
 
 ```{r}
 
@@ -102,28 +269,27 @@ save(objectname1, objectname2, file = "data.RData")
       compress = isTRUE(!ascii), 
       compression_level,
       eval.promises = TRUE, 
-      precheck = TRUE)
-
-Try it!
+      precheck = TRUE
+    )
 
 ```{r}
 
 ```
 
-Save your entire workspace to an `.Rdata` file using the following general code. If the data are being saved to a folder you need to specify the path to the folder. It can be reloaded with the `load()` function.
+Save your entire workspace (all objects in your Environment) to an `.Rdata` file using the following general code. If the data are being saved to a folder you need to specify the path to the folder. It can be reloaded with the `load()` function.
 
 ```{r, savewkspc, eval = FALSE}
 save.image("myworkspace.RData")
 ```
 
     # syntax
-    save.image(file = ".RData", 
+    save.image(
+      file = ".RData", 
       version = NULL, 
       ascii = FALSE,
       compress = !ascii, 
-      safe = TRUE)
-
-Try it!
+      safe = TRUE
+    )
 
 ```{r}
 
@@ -131,8 +297,82 @@ Try it!
 
 ## Excel Files
 
-TBA
+### Workbook Format
+
+    # syntax
+    excel_format(guess = TRUE)
+
+```{r}
+
+```
+
+### Number of Sheets
+
+    # syntax
+    excel_sheets(path)
+    
+```{r}
+
+```
+
+### Read a Workbook Sheet
+
+    # general syntax, guesses file type
+    read_excel(
+      path,
+      sheet = NULL,
+      range = NULL,
+      col_names = TRUE,
+      col_types = NULL,
+      na = "",
+      trim_ws = TRUE,
+      skip = 0,
+      n_max = Inf,
+      guess_max = min(1000, n_max),
+      progress = readxl_progress(),
+      .name_repair = "unique"
+    )
+
+    # if you know it is an .xlsx file
+    read_xlsx(
+      path,
+      sheet = NULL,
+      range = NULL,
+      col_names = TRUE,
+      col_types = NULL,
+      na = "",
+      trim_ws = TRUE,
+      skip = 0,
+      n_max = Inf,
+      guess_max = min(1000, n_max),
+      progress = readxl_progress(),
+      .name_repair = "unique"
+    )
+    
+```{r}
+
+```
+
+### Write to an Excel File
+
+    # syntax
+    write_xlsx(
+      x,
+      path = tempfile(fileext = ".xlsx"),
+      col_names = TRUE,
+      format_headers = TRUE,
+      use_zip64 = FALSE
+    )
+    
+```{r}
+
+```
 
 ## JSON Files
 
-TBA
+### TBA
+
+<hr>
+```{r}
+sessionInfo()
+```
